@@ -36,7 +36,7 @@ public class S3Service : IStorage
 
         await _s3Client.PutObjectAsync(request);
 
-        return $"https://{bucketName}.s3-{region}.amazonaws.com/{key}";
+        return $"https://{bucketName}.s3.{region}.amazonaws.com/{key}";
     }
 
     public async Task DeleteFileByUrl(string? fileUrl)
@@ -49,7 +49,7 @@ public class S3Service : IStorage
 
         var region = _configuration["AWS:Region"];
 
-        var marker = $"https://{bucketName}.s3-{region}.amazonaws.com/";
+        var marker = $"https://{bucketName}.s3.{region}.amazonaws.com/";
         var index = fileUrl.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
 
         if (index < 0) return;

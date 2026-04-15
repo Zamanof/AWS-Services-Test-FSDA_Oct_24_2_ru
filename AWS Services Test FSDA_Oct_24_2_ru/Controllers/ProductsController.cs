@@ -2,7 +2,6 @@
 using AWS_Services_Test_FSDA_Oct_24_2_ru.DTOs;
 using AWS_Services_Test_FSDA_Oct_24_2_ru.Models;
 using AWS_Services_Test_FSDA_Oct_24_2_ru.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +28,76 @@ public class ProductsController : ControllerBase
                                     .Select(p => MapToReadDto(p))
                                     .ToListAsync();
         return Ok(products);
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<ProductReadDto>> GetProduct(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+
+        if (product is null) return NotFound("Product not found");
+
+        return Ok(MapToReadDto(product));
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ProductReadDto>> CreateProduct([FromForm] ProductCreateDto dto)
+    {
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+
+        var imageUrl = await _storage.UploadFileAsync(dto.Image);
+
+        var product = new Product
+        {
+            Name = dto.Name,
+            Description = dto.Description,
+            Price = dto.Price,
+            Category = dto.Category,
+            ImageUrl = imageUrl,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, MapToReadDto(product));
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<ProductReadDto>> UpdateProduct(int id, [FromForm] ProductUpdateDto dto)
+    {
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+
+        var product = await _context.Products.FindAsync(id);
+        if (product is null) return NotFound("Product not found");
+
+        product.Name = dto.Name;
+        product.Description = dto.Description;
+        product.Price = dto.Price;
+        product.Category = dto.Category;
+
+        if (dto.Image != null)
+        {
+            var imageUrl = await _storage.UploadFileAsync(dto.Image);
+            product.ImageUrl = imageUrl;
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok(MapToReadDto(product));
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+        if (product is null) return NotFound("Product not found");
+
+        await _storage.DeleteFileByUrl(product.ImageUrl);
+
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 
     private static ProductReadDto MapToReadDto(Product p)
