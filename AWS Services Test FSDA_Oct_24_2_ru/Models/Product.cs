@@ -16,6 +16,9 @@ public class Product
     [Range(0.01, 100000)]
     public decimal Price { get; set; }
     public string? ImageUrl { get; set; }
+    public DateTime? DiscountStart { get; set; }
+    public DateTime? DiscountEnd { get; set; }
+    public bool IsDiscountActive { get; set; }
     public DateTime CreatedAt { get; set; }
 
 }

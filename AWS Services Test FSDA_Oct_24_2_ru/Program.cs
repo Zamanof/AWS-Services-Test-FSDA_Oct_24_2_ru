@@ -61,9 +61,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("ReactApp");
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapFallbackToFile("index.html");
 
 using (var scope = app.Services.CreateScope())
 {

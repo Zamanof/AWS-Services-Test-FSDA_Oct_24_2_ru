@@ -55,6 +55,31 @@ export default function ProductForm({
                     maxLength={100}
                     required/>
             </div>
+
+            <div className="row">
+                <div className="col-md-6 mb-3">
+                    <label className="form-label">Discount Start (UTC)</label>
+                    <input
+                        className="form-control"
+                        type="datetime-local"
+                        name="discountStart"
+                        value={form.discountStart}
+                        onChange={onChange}
+                        />
+                </div>
+                <div className="col-md-6 mb-3">
+                    <label className="form-label">Discount End (UTC)</label>
+                    <input
+                        className="form-control"
+                        type="datetime-local"
+                        name="discountEnd"
+                        value={form.discountEnd}
+                        onChange={onChange}
+                    />
+                </div>
+
+            </div>
+
             <div className="mb-3">
                 <label className="form-label">Image</label>
                 <input
