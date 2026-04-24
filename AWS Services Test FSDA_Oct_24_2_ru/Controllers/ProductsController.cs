@@ -44,6 +44,7 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<ProductReadDto>> CreateProduct([FromForm] ProductCreateDto dto)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        ValidateDiscountRange(dto.DiscountStart, dto.DiscountEnd);
 
         var imageUrl = await _storage.UploadFileAsync(dto.Image);
 
@@ -54,7 +55,10 @@ public class ProductsController : ControllerBase
             Price = dto.Price,
             Category = dto.Category,
             ImageUrl = imageUrl,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            DiscountStart = dto.DiscountStart,
+            DiscountEnd = dto.DiscountEnd,
+            IsDiscountActive = false
         };
 
         _context.Products.Add(product);
@@ -67,6 +71,7 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<ProductReadDto>> UpdateProduct(int id, [FromForm] ProductUpdateDto dto)
     {
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        ValidateDiscountRange(dto.DiscountStart, dto.DiscountEnd);
 
         var product = await _context.Products.FindAsync(id);
         if (product is null) return NotFound("Product not found");
@@ -75,6 +80,8 @@ public class ProductsController : ControllerBase
         product.Description = dto.Description;
         product.Price = dto.Price;
         product.Category = dto.Category;
+        product.DiscountStart = dto.DiscountStart;
+        product.DiscountEnd = dto.DiscountEnd;
 
         if (dto.Image != null)
         {
@@ -100,6 +107,20 @@ public class ProductsController : ControllerBase
         return NoContent();
     }
 
+    private void ValidateDiscountRange(DateTime? start, DateTime? end)
+    {
+        if (start.HasValue && end.HasValue && start > end)
+        {
+            ModelState.AddModelError("DiscountEnd", "Discount end date must be after start date.");
+            return;
+        }
+        if(start.HasValue != end.HasValue)
+        {
+            ModelState.AddModelError("DiscountRange", "Both DiscountStart and DiscountEnd must be set together.");
+            return;
+        }
+    }
+
     private static ProductReadDto MapToReadDto(Product p)
     {
         return new ProductReadDto
@@ -110,7 +131,10 @@ public class ProductsController : ControllerBase
             Price = p.Price,
             Category = p.Category,
             ImageUrl = p.ImageUrl,
-            CreatedAt = p.CreatedAt
+            CreatedAt = p.CreatedAt,
+            DiscountStart = p.DiscountStart,
+            DiscountEnd = p.DiscountEnd,
+            IsDiscountActive = p.IsDiscountActive
         };
     }
 }

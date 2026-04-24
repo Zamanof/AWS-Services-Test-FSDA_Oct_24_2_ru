@@ -8,7 +8,9 @@ const initialForm={
     name:"",
     description:"",
     price:"",
-    category:""
+    category:"",
+    discountStart:"",
+    discountEnd:"",
 }
 
 export default function ProductCreate(){
@@ -36,6 +38,15 @@ export default function ProductCreate(){
             formData.append("description",form.description)
             formData.append("price",form.price)
             formData.append("category",form.category)
+
+            if(form.discountStart){
+                formData.append("discountStart", new Date(form.discountStart).toISOString());
+            }
+
+            if(form.discountEnd){
+                formData.append("discountEnd", new Date(form.discountEnd).toISOString());
+            }
+
             if(imageFile){
                 formData.append("image", imageFile)
             }

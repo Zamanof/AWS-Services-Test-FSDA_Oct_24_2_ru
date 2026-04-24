@@ -11,4 +11,7 @@ public class ProductReadDto
     public decimal Price { get; set; }
     public string? ImageUrl { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? DiscountStart { get; set; }
+    public DateTime? DiscountEnd { get; set; }
+    public bool IsDiscountActive { get; set; }
 }

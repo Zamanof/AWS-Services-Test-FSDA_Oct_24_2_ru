@@ -69,6 +69,12 @@ export default function ProductList() {
                                 <p className="card-text mb-3">
                                     <strong>Price:</strong> ${Number(product.price).toFixed(2)}
                                 </p>
+                                <p className="card-text mb-3">
+                                    <strong>Discount:</strong>{" "}
+                                    {product.isDiscountActive? (
+                                        <span className="badge text-bg-success">Active</span>
+                                    ):(<span className="badge text-bg-secondary">InActive</span>)}
+                                </p>
                                 <div className="d-flex gap-2 flex-wrap">
                                     <Link to={`/products/${product.id}`} className="btn btn-sm btn-outline-secondary">
                                         Details

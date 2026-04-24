@@ -38,6 +38,11 @@ export default function ProductDetails() {
         return <div className="alert alert-warning">Product not found.</div>;
     }
 
+    const discountWindow =
+        product.discountStart && product.discountEnd ?
+            `${new Date(product.discountStart).toLocaleString()} - ${new Date(product.discountEnd).toLocaleString()}`
+            : "Not Configured";
+
     return (
         <div className="card shadow-sm p-4">
             <img
@@ -54,6 +59,9 @@ export default function ProductDetails() {
             </p>
             <p className="mb-2">
                 <strong>Created:</strong> {new Date(product.createdAt).toLocaleString()}
+            </p>
+            <p className="mb-2">
+                <strong>Discount window:</strong> {discountWindow}
             </p>
             <p className="mb-3">{product.description}</p>
 
